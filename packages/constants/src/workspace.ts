@@ -1,16 +1,15 @@
-import { TStaticViewTypes, IWorkspaceSearchResults } from "@plane/types";
-import { EUserWorkspaceRoles } from "./user";
+/**
+ * Copyright (c) 2023-present Plane Software, Inc. and contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ * See the LICENSE file for details.
+ */
 
-export const ORGANIZATION_SIZE = [
-  "Just myself", // TODO: translate
-  "2-10",
-  "11-50",
-  "51-200",
-  "201-500",
-  "500+",
-];
+import type { TStaticViewTypes, IWorkspaceSearchResults } from "@plane/types";
+import { EUserWorkspaceRoles } from "@plane/types";
 
-export const RESTRICTED_URLS = [
+export const ORGANIZATION_SIZE: string[] = ["Just myself", "2-10", "11-50", "51-200", "201-500", "500+"];
+
+export const RESTRICTED_URLS: string[] = [
   "404",
   "accounts",
   "api",
@@ -76,70 +75,6 @@ export const RESTRICTED_URLS = [
   "licenses",
   "instances",
   "instance",
-];
-
-export const WORKSPACE_SETTINGS = {
-  general: {
-    key: "general",
-    i18n_label: "workspace_settings.settings.general.title",
-    href: `/settings`,
-    access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER],
-    highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/`,
-  },
-  members: {
-    key: "members",
-    i18n_label: "workspace_settings.settings.members.title",
-    href: `/settings/members`,
-    access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER],
-    highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/members/`,
-  },
-  "billing-and-plans": {
-    key: "billing-and-plans",
-    i18n_label: "workspace_settings.settings.billing_and_plans.title",
-    href: `/settings/billing`,
-    access: [EUserWorkspaceRoles.ADMIN],
-    highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/billing/`,
-  },
-  export: {
-    key: "export",
-    i18n_label: "workspace_settings.settings.exports.title",
-    href: `/settings/exports`,
-    access: [EUserWorkspaceRoles.ADMIN],
-    highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/exports/`,
-  },
-  webhooks: {
-    key: "webhooks",
-    i18n_label: "workspace_settings.settings.webhooks.title",
-    href: `/settings/webhooks`,
-    access: [EUserWorkspaceRoles.ADMIN],
-    highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/webhooks/`,
-  },
-  "api-tokens": {
-    key: "api-tokens",
-    i18n_label: "workspace_settings.settings.api_tokens.title",
-    href: `/settings/api-tokens`,
-    access: [EUserWorkspaceRoles.ADMIN],
-    highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/api-tokens/`,
-  },
-};
-
-export const WORKSPACE_SETTINGS_ACCESS = Object.fromEntries(
-  Object.entries(WORKSPACE_SETTINGS).map(([_, { href, access }]) => [href, access])
-);
-
-export const WORKSPACE_SETTINGS_LINKS: {
-  key: string;
-  i18n_label: string;
-  href: string;
-  access: EUserWorkspaceRoles[];
-  highlight: (pathname: string, baseUrl: string) => boolean;
-}[] = [
-  WORKSPACE_SETTINGS["general"],
-  WORKSPACE_SETTINGS["members"],
-  WORKSPACE_SETTINGS["billing-and-plans"],
-  WORKSPACE_SETTINGS["export"],
-  WORKSPACE_SETTINGS["webhooks"],
-  WORKSPACE_SETTINGS["api-tokens"],
 ];
 
 export const ROLE = {
@@ -260,45 +195,36 @@ export interface IWorkspaceSidebarNavigationItem {
   labelTranslationKey: string;
   href: string;
   access: EUserWorkspaceRoles[];
+  highlight: (pathname: string, url: string) => boolean;
 }
 
 export const WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS: Record<string, IWorkspaceSidebarNavigationItem> = {
-  "your-work": {
-    key: "your_work",
-    labelTranslationKey: "your_work",
-    href: `/profile/`,
-    access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER],
-  },
   views: {
     key: "views",
     labelTranslationKey: "views",
     href: `/workspace-views/all-issues/`,
     access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER, EUserWorkspaceRoles.GUEST],
+    highlight: (pathname: string, url: string) => pathname.includes(url),
   },
   analytics: {
     key: "analytics",
     labelTranslationKey: "analytics",
     href: `/analytics/`,
     access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER],
-  },
-  drafts: {
-    key: "drafts",
-    labelTranslationKey: "drafts",
-    href: `/drafts/`,
-    access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER],
+    highlight: (pathname: string, url: string) => pathname.includes(url),
   },
   archives: {
     key: "archives",
     labelTranslationKey: "archives",
     href: `/projects/archives/`,
     access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER],
+    highlight: (pathname: string, url: string) => pathname.includes(url),
   },
 };
+
 export const WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS_LINKS: IWorkspaceSidebarNavigationItem[] = [
   WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS["views"],
   WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS["analytics"],
-  WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS["your-work"],
-  WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS["drafts"],
   WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS["archives"],
 ];
 
@@ -308,24 +234,50 @@ export const WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS: Record<string, IWorkspac
     labelTranslationKey: "home.title",
     href: `/`,
     access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER, EUserWorkspaceRoles.GUEST],
+    highlight: (pathname: string, url: string) => pathname === url,
   },
   inbox: {
     key: "inbox",
     labelTranslationKey: "notification.label",
     href: `/notifications/`,
     access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER, EUserWorkspaceRoles.GUEST],
+    highlight: (pathname: string, url: string) => pathname.includes(url),
+  },
+  "your-work": {
+    key: "your_work",
+    labelTranslationKey: "your_work",
+    href: `/profile/`,
+    access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER],
+    highlight: (pathname: string, url: string) => pathname.includes(url),
+  },
+  stickies: {
+    key: "stickies",
+    labelTranslationKey: "sidebar.stickies",
+    href: `/stickies/`,
+    access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER, EUserWorkspaceRoles.GUEST],
+    highlight: (pathname: string, url: string) => pathname.includes(url),
+  },
+  drafts: {
+    key: "drafts",
+    labelTranslationKey: "drafts",
+    href: `/drafts/`,
+    access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER],
+    highlight: (pathname: string, url: string) => pathname.includes(url),
   },
   projects: {
     key: "projects",
     labelTranslationKey: "projects",
     href: `/projects/`,
     access: [EUserWorkspaceRoles.ADMIN, EUserWorkspaceRoles.MEMBER, EUserWorkspaceRoles.GUEST],
+    highlight: (pathname: string, url: string) => pathname === url,
   },
 };
 
 export const WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS_LINKS: IWorkspaceSidebarNavigationItem[] = [
   WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["home"],
-  WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["inbox"],
+];
+
+export const WORKSPACE_SIDEBAR_STATIC_PINNED_NAVIGATION_ITEMS_LINKS: IWorkspaceSidebarNavigationItem[] = [
   WORKSPACE_SIDEBAR_STATIC_NAVIGATION_ITEMS["projects"],
 ];
 
@@ -341,3 +293,11 @@ export const WORKSPACE_DEFAULT_SEARCH_RESULT: IWorkspaceSearchResults = {
     page: [],
   },
 };
+
+export const USE_CASES = [
+  "Plan and track product roadmaps",
+  "Manage engineering sprints",
+  "Coordinate cross-functional projects",
+  "Replace our current tool",
+  "Just exploring",
+];

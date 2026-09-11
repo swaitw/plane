@@ -1,10 +1,10 @@
-import { Placement } from "@popperjs/core";
+import type { Placement } from "@popperjs/core";
 
 export interface IDropdown {
   // root props
   onOpen?: () => void;
   onClose?: () => void;
-  containerClassName?: (isOpen: boolean) => string;
+  containerClassName?: string | ((isOpen: boolean) => string);
   tabIndex?: number;
   placement?: Placement;
   disabled?: boolean;

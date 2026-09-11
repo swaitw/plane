@@ -1,17 +1,12 @@
-export type TIssueLayout =
-  | "list"
-  | "kanban"
-  | "calendar"
-  | "spreadsheet"
-  | "gantt";
+/**
+ * Copyright (c) 2023-present Plane Software, Inc. and contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ * See the LICENSE file for details.
+ */
 
-export enum EIssueLayoutTypes {
-  LIST = "list",
-  KANBAN = "kanban",
-  CALENDAR = "calendar",
-  GANTT = "gantt_chart",
-  SPREADSHEET = "spreadsheet",
-}
+import { EIssueLayoutTypes } from "@plane/types";
+
+export type TIssueLayout = "list" | "kanban" | "calendar" | "spreadsheet" | "gantt";
 
 export type TIssueLayoutMap = Record<
   EIssueLayoutTypes,
@@ -25,7 +20,7 @@ export type TIssueLayoutMap = Record<
 export const SITES_ISSUE_LAYOUTS: {
   key: TIssueLayout;
   titleTranslationKey: string;
-  icon: any;
+  icon: string;
 }[] = [
   {
     key: "list",
@@ -37,9 +32,6 @@ export const SITES_ISSUE_LAYOUTS: {
     icon: "Kanban",
     titleTranslationKey: "issue.layouts.kanban",
   },
-  // { key: "calendar", title: "Calendar", icon: Calendar },
-  // { key: "spreadsheet", title: "Spreadsheet", icon: Sheet },
-  // { key: "gantt", title: "Gantt chart", icon: GanttChartSquare },
 ];
 
 export const ISSUE_LAYOUT_MAP: TIssueLayoutMap = {
@@ -73,4 +65,5 @@ export const ISSUE_LAYOUT_MAP: TIssueLayoutMap = {
 export const ISSUE_LAYOUTS: {
   key: EIssueLayoutTypes;
   i18n_title: string;
+  i18n_label: string;
 }[] = Object.values(ISSUE_LAYOUT_MAP);

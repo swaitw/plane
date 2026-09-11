@@ -1,16 +1,22 @@
-"use client";
+/**
+ * Copyright (c) 2023-present Plane Software, Inc. and contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ * See the LICENSE file for details.
+ */
 
 import React, { useMemo, useState } from "react";
 import { Area, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, ComposedChart, CartesianGrid } from "recharts";
 // plane imports
 import { AXIS_LABEL_CLASSNAME } from "@plane/constants";
-import { TAreaChartProps } from "@plane/types";
+import type { TAreaChartProps } from "@plane/types";
 // local components
 import { getLegendProps } from "../components/legend";
 import { CustomXAxisTick, CustomYAxisTick } from "../components/tick";
 import { CustomTooltip } from "../components/tooltip";
 
-export const AreaChart = React.memo(<K extends string, T extends string>(props: TAreaChartProps<K, T>) => {
+export const AreaChart = React.memo(function AreaChart<K extends string, T extends string>(
+  props: TAreaChartProps<K, T>
+) {
   const {
     data,
     areas,
@@ -23,19 +29,28 @@ export const AreaChart = React.memo(<K extends string, T extends string>(props: 
       x: undefined,
       y: 10,
     },
+    customTicks,
     showTooltip = true,
     comparisonLine,
   } = props;
   // states
   const [activeArea, setActiveArea] = useState<string | null>(null);
   const [activeLegend, setActiveLegend] = useState<string | null>(null);
+
   // derived values
-  const itemKeys = useMemo(() => areas.map((area) => area.key), [areas]);
-  const itemLabels: Record<string, string> = useMemo(
-    () => areas.reduce((acc, area) => ({ ...acc, [area.key]: area.label }), {}),
-    [areas]
-  );
-  const itemDotColors = useMemo(() => areas.reduce((acc, area) => ({ ...acc, [area.key]: area.fill }), {}), [areas]);
+  const { itemKeys, itemLabels, itemDotColors } = useMemo(() => {
+    const keys: string[] = [];
+    const labels: Record<string, string> = {};
+    const colors: Record<string, string> = {};
+
+    for (const area of areas) {
+      keys.push(area.key);
+      labels[area.key] = area.label;
+      colors[area.key] = area.fill;
+    }
+
+    return { itemKeys: keys, itemLabels: labels, itemDotColors: colors };
+  }, [areas]);
 
   const renderAreas = useMemo(
     () =>
@@ -77,7 +92,7 @@ export const AreaChart = React.memo(<K extends string, T extends string>(props: 
     // get the last data point
     const lastPoint = data[data.length - 1];
     // for the y-value in the last point, use its yAxis key value
-    const lastYValue = lastPoint[yAxis.key] || 0;
+    const lastYValue = lastPoint[yAxis.key] ?? 0;
     // create data for a straight line that has points at each x-axis position
     return data.map((item, index) => {
       // calculate the y value for this point on the straight line
@@ -90,8 +105,7 @@ export const AreaChart = React.memo(<K extends string, T extends string>(props: 
         comparisonLine: interpolatedValue,
       };
     });
-  }, [data, xAxis.key]);
-
+  }, [data, xAxis.key, yAxis.key]);
   return (
     <div className={className}>
       <ResponsiveContainer width="100%" height="100%">
@@ -104,10 +118,13 @@ export const AreaChart = React.memo(<K extends string, T extends string>(props: 
             left: margin?.left === undefined ? 20 : margin.left,
           }}
         >
-          <CartesianGrid stroke="rgba(var(--color-border-100), 0.8)" vertical={false} />
+          <CartesianGrid stroke="var(--border-color-subtle)" vertical={false} />
           <XAxis
             dataKey={xAxis.key}
-            tick={(props) => <CustomXAxisTick {...props} />}
+            tick={(props) => {
+              const TickComponent = customTicks?.x || CustomXAxisTick;
+              return <TickComponent {...props} />;
+            }}
             tickLine={false}
             axisLine={false}
             label={
@@ -128,12 +145,15 @@ export const AreaChart = React.memo(<K extends string, T extends string>(props: 
                 value: yAxis.label,
                 angle: -90,
                 position: "bottom",
-                offset: -24,
-                dx: -16,
+                offset: yAxis.offset ?? -24,
+                dx: yAxis.dx ?? -16,
                 className: AXIS_LABEL_CLASSNAME,
               }
             }
-            tick={(props) => <CustomYAxisTick {...props} />}
+            tick={(props) => {
+              const TickComponent = customTicks?.y || CustomYAxisTick;
+              return <TickComponent {...props} />;
+            }}
             tickCount={tickCount.y}
             allowDecimals={!!yAxis.allowDecimals}
           />
@@ -149,7 +169,7 @@ export const AreaChart = React.memo(<K extends string, T extends string>(props: 
           {showTooltip && (
             <Tooltip
               cursor={{
-                stroke: "rgba(var(--color-text-300))",
+                stroke: "var(--text-color-tertiary)",
                 strokeDasharray: "4 4",
               }}
               wrapperStyle={{

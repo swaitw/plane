@@ -1,42 +1,39 @@
 {
   "name": "@plane/decorators",
   "version": "0.1.0",
+  "private": true,
   "description": "Controller and route decorators for Express.js applications",
   "license": "AGPL-3.0",
-  "private": true,
-  "main": "./dist/index.js",
+  "type": "module",
+  "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist/**"
-  ],
-  "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --external express,ws",
-    "dev": "tsup src/index.ts --format esm,cjs --watch --dts --external express,ws",
-    "lint": "eslint src --ext .ts,.tsx",
-    "lint:errors": "eslint src --ext .ts,.tsx --quiet"
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
   },
-  "dependencies": {
-    "reflect-metadata": "^0.2.2",
-    "express": "^4.21.2"
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch --no-clean",
+    "check:lint": "oxlint --max-warnings=3 .",
+    "check:types": "tsc --noEmit",
+    "check:format": "oxfmt --check .",
+    "fix:lint": "oxlint --fix .",
+    "fix:format": "oxfmt .",
+    "clean": "rm -rf .turbo && rm -rf .next && rm -rf node_modules && rm -rf dist"
   },
   "devDependencies": {
-    "@plane/eslint-config": "*",
-    "@types/express": "^4.17.21",
-    "@types/reflect-metadata": "^0.1.0",
-    "@plane/typescript-config": "*",
-    "@types/node": "^20.14.9",
-    "@types/ws": "^8.5.10",
-    "tsup": "8.4.0",
-    "typescript": "^5.3.3"
+    "@plane/typescript-config": "workspace:*",
+    "@types/express": "catalog:",
+    "@types/node": "catalog:",
+    "@types/ws": "catalog:",
+    "reflect-metadata": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:"
   },
-  "peerDependencies": {
-    "express": ">=4.21.2",
-    "ws": ">=8.0.0"
-  },
-  "peerDependenciesMeta": {
-    "ws": {
-      "optional": true
-    }
+  "inlinedDependencies": {
+    "@types/express": "4.17.23",
+    "@types/express-serve-static-core": "4.19.6",
+    "reflect-metadata": "0.2.2"
   }
 }

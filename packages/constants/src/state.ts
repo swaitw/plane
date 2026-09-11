@@ -1,4 +1,10 @@
-export type TStateGroups = "backlog" | "unstarted" | "started" | "completed" | "cancelled";
+/**
+ * Copyright (c) 2023-present Plane Software, Inc. and contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ * See the LICENSE file for details.
+ */
+
+import type { TStateGroups } from "@plane/types";
 
 export type TDraggableData = {
   groupKey: TStateGroups;
@@ -53,6 +59,34 @@ export const PENDING_STATE_GROUPS = [
   STATE_GROUPS.started.key,
   STATE_GROUPS.cancelled.key,
 ];
+
+export const STATE_DISTRIBUTION = {
+  [STATE_GROUPS.backlog.key]: {
+    key: STATE_GROUPS.backlog.key,
+    issues: "backlog_issues",
+    points: "backlog_estimate_points",
+  },
+  [STATE_GROUPS.unstarted.key]: {
+    key: STATE_GROUPS.unstarted.key,
+    issues: "unstarted_issues",
+    points: "unstarted_estimate_points",
+  },
+  [STATE_GROUPS.started.key]: {
+    key: STATE_GROUPS.started.key,
+    issues: "started_issues",
+    points: "started_estimate_points",
+  },
+  [STATE_GROUPS.completed.key]: {
+    key: STATE_GROUPS.completed.key,
+    issues: "completed_issues",
+    points: "completed_estimate_points",
+  },
+  [STATE_GROUPS.cancelled.key]: {
+    key: STATE_GROUPS.cancelled.key,
+    issues: "cancelled_issues",
+    points: "cancelled_estimate_points",
+  },
+};
 
 export const PROGRESS_STATE_GROUPS_DETAILS = [
   {

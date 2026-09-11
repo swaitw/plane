@@ -1,5 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+/**
+ * Copyright (c) 2023-present Plane Software, Inc. and contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ * See the LICENSE file for details.
+ */
 
 import React, { useMemo, useState } from "react";
 import {
@@ -14,13 +17,15 @@ import {
 } from "recharts";
 // plane imports
 import { AXIS_LABEL_CLASSNAME } from "@plane/constants";
-import { TLineChartProps } from "@plane/types";
+import type { TLineChartProps } from "@plane/types";
 // local components
 import { getLegendProps } from "../components/legend";
 import { CustomXAxisTick, CustomYAxisTick } from "../components/tick";
 import { CustomTooltip } from "../components/tooltip";
 
-export const LineChart = React.memo(<K extends string, T extends string>(props: TLineChartProps<K, T>) => {
+export const LineChart = React.memo(function LineChart<K extends string, T extends string>(
+  props: TLineChartProps<K, T>
+) {
   const {
     data,
     lines,
@@ -32,19 +37,29 @@ export const LineChart = React.memo(<K extends string, T extends string>(props: 
       x: undefined,
       y: 10,
     },
+    customTicks,
     legend,
     showTooltip = true,
+    customTooltipContent,
   } = props;
   // states
   const [activeLine, setActiveLine] = useState<string | null>(null);
   const [activeLegend, setActiveLegend] = useState<string | null>(null);
+
   // derived values
-  const itemKeys = useMemo(() => lines.map((line) => line.key), [lines]);
-  const itemLabels: Record<string, string> = useMemo(
-    () => lines.reduce((acc, line) => ({ ...acc, [line.key]: line.label }), {}),
-    [lines]
-  );
-  const itemDotColors = useMemo(() => lines.reduce((acc, line) => ({ ...acc, [line.key]: line.stroke }), {}), [lines]);
+  const { itemKeys, itemLabels, itemDotColors } = useMemo(() => {
+    const keys: string[] = [];
+    const labels: Record<string, string> = {};
+    const colors: Record<string, string> = {};
+
+    for (const line of lines) {
+      keys.push(line.key);
+      labels[line.key] = line.label;
+      colors[line.key] = line.stroke;
+    }
+
+    return { itemKeys: keys, itemLabels: labels, itemDotColors: colors };
+  }, [lines]);
 
   const renderLines = useMemo(
     () =>
@@ -89,10 +104,13 @@ export const LineChart = React.memo(<K extends string, T extends string>(props: 
             left: margin?.left === undefined ? 20 : margin.left,
           }}
         >
-          <CartesianGrid stroke="rgba(var(--color-border-100), 0.8)" vertical={false} />
+          <CartesianGrid stroke="var(--border-color-subtle)" vertical={false} />
           <XAxis
             dataKey={xAxis.key}
-            tick={(props) => <CustomXAxisTick {...props} />}
+            tick={(props) => {
+              const TickComponent = customTicks?.x || CustomXAxisTick;
+              return <TickComponent {...props} />;
+            }}
             tickLine={false}
             axisLine={false}
             label={
@@ -114,11 +132,14 @@ export const LineChart = React.memo(<K extends string, T extends string>(props: 
                 angle: -90,
                 position: "bottom",
                 offset: -24,
-                dx: -16,
+                dx: yAxis.dx ?? -16,
                 className: AXIS_LABEL_CLASSNAME,
               }
             }
-            tick={(props) => <CustomYAxisTick {...props} />}
+            tick={(props) => {
+              const TickComponent = customTicks?.y || CustomYAxisTick;
+              return <TickComponent {...props} />;
+            }}
             tickCount={tickCount.y}
             allowDecimals={!!yAxis.allowDecimals}
           />
@@ -134,23 +155,26 @@ export const LineChart = React.memo(<K extends string, T extends string>(props: 
           {showTooltip && (
             <Tooltip
               cursor={{
-                stroke: "rgba(var(--color-text-300))",
+                stroke: "var(--text-color-tertiary)",
                 strokeDasharray: "4 4",
               }}
               wrapperStyle={{
                 pointerEvents: "auto",
               }}
-              content={({ active, label, payload }) => (
-                <CustomTooltip
-                  active={active}
-                  activeKey={activeLine}
-                  label={label}
-                  payload={payload}
-                  itemKeys={itemKeys}
-                  itemLabels={itemLabels}
-                  itemDotColors={itemDotColors}
-                />
-              )}
+              content={({ active, label, payload }) => {
+                if (customTooltipContent) return customTooltipContent({ active, label, payload });
+                return (
+                  <CustomTooltip
+                    active={active}
+                    activeKey={activeLine}
+                    label={label}
+                    payload={payload}
+                    itemKeys={itemKeys}
+                    itemLabels={itemLabels}
+                    itemDotColors={itemDotColors}
+                  />
+                );
+              }}
             />
           )}
           {renderLines}

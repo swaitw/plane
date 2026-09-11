@@ -1,4 +1,10 @@
-import { TLanguage, ILanguageOption } from "../types";
+/**
+ * Copyright (c) 2023-present Plane Software, Inc. and contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ * See the LICENSE file for details.
+ */
+
+import type { TLanguage, ILanguageOption } from "../types";
 
 export const FALLBACK_LANGUAGE: TLanguage = "en";
 
@@ -22,6 +28,7 @@ export const SUPPORTED_LANGUAGES: ILanguageOption[] = [
   { label: "Română", value: "ro" },
   { label: "Tiếng việt", value: "vi-VN" },
   { label: "Türkçe", value: "tr-TR" },
+  { label: "ქართული", value: "ka-ge" },
 ];
 
 export const LANGUAGE_STORAGE_KEY = "userLanguage";

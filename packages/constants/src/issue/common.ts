@@ -1,4 +1,17 @@
-import { TIssueGroupByOptions, TIssueOrderByOptions, IIssueDisplayProperties } from "@plane/types";
+/**
+ * Copyright (c) 2023-present Plane Software, Inc. and contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ * See the LICENSE file for details.
+ */
+
+import type {
+  TIssueGroupByOptions,
+  TIssueOrderByOptions,
+  IIssueDisplayProperties,
+  IIssueFilterOptions,
+  TIssue,
+  EIssuesStoreType,
+} from "@plane/types";
 
 export const ALL_ISSUES = "All Issues";
 
@@ -22,6 +35,7 @@ export enum EIssueGroupByToServerOptions {
   "target_date" = "target_date",
   "project" = "project_id",
   "created_by" = "created_by",
+  // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
   "team_project" = "project_id",
 }
 
@@ -36,28 +50,6 @@ export enum EIssueGroupBYServerToProperty {
   "target_date" = "target_date",
   "project_id" = "project_id",
   "created_by" = "created_by",
-}
-
-export enum EIssueServiceType {
-  ISSUES = "issues",
-  EPICS = "epics",
-  WORK_ITEMS = "work-items",
-}
-
-export enum EIssuesStoreType {
-  GLOBAL = "GLOBAL",
-  PROFILE = "PROFILE",
-  TEAM = "TEAM",
-  PROJECT = "PROJECT",
-  CYCLE = "CYCLE",
-  MODULE = "MODULE",
-  TEAM_VIEW = "TEAM_VIEW",
-  PROJECT_VIEW = "PROJECT_VIEW",
-  ARCHIVED = "ARCHIVED",
-  DRAFT = "DRAFT",
-  DEFAULT = "DEFAULT",
-  WORKSPACE_DRAFT = "WORKSPACE_DRAFT",
-  EPIC = "EPIC",
 }
 
 export enum EIssueCommentAccessSpecifier {
@@ -115,7 +107,8 @@ export type TCreateModalStoreTypes =
   | EIssuesStoreType.PROFILE
   | EIssuesStoreType.CYCLE
   | EIssuesStoreType.MODULE
-  | EIssuesStoreType.EPIC;
+  | EIssuesStoreType.EPIC
+  | EIssuesStoreType.TEAM_PROJECT_WORK_ITEMS;
 
 export const ISSUE_GROUP_BY_OPTIONS: {
   key: TIssueGroupByOptions;
@@ -165,6 +158,15 @@ export const ISSUE_DISPLAY_PROPERTIES_KEYS: (keyof IIssueDisplayProperties)[] = 
   "issue_type",
 ];
 
+export const SUB_ISSUES_DISPLAY_PROPERTIES_KEYS: (keyof IIssueDisplayProperties)[] = [
+  "key",
+  "assignee",
+  "start_date",
+  "due_date",
+  "priority",
+  "state",
+];
+
 export const ISSUE_DISPLAY_PROPERTIES: {
   key: keyof IIssueDisplayProperties;
   titleTranslationKey: string;
@@ -172,10 +174,6 @@ export const ISSUE_DISPLAY_PROPERTIES: {
   {
     key: "key",
     titleTranslationKey: "issue.display.properties.id",
-  },
-  {
-    key: "issue_type",
-    titleTranslationKey: "issue.display.properties.issue_type",
   },
   {
     key: "assignee",
@@ -245,7 +243,7 @@ export const SPREADSHEET_PROPERTY_DETAILS: {
     ascendingOrderTitle: "A",
     descendingOrderKey: "-assignees__first_name",
     descendingOrderTitle: "Z",
-    icon: "Users",
+    icon: "MembersPropertyIcon",
   },
   created_on: {
     i18n_title: "common.sort.created_on",
@@ -261,7 +259,7 @@ export const SPREADSHEET_PROPERTY_DETAILS: {
     ascendingOrderTitle: "New",
     descendingOrderKey: "target_date",
     descendingOrderTitle: "Old",
-    icon: "CalendarCheck2",
+    icon: "DueDatePropertyIcon",
   },
   estimate: {
     i18n_title: "common.estimate",
@@ -269,7 +267,7 @@ export const SPREADSHEET_PROPERTY_DETAILS: {
     ascendingOrderTitle: "Low",
     descendingOrderKey: "-estimate_point__key",
     descendingOrderTitle: "High",
-    icon: "Triangle",
+    icon: "EstimatePropertyIcon",
   },
   labels: {
     i18n_title: "common.labels",
@@ -277,7 +275,7 @@ export const SPREADSHEET_PROPERTY_DETAILS: {
     ascendingOrderTitle: "A",
     descendingOrderKey: "-labels__name",
     descendingOrderTitle: "Z",
-    icon: "Tag",
+    icon: "LabelPropertyIcon",
   },
   modules: {
     i18n_title: "common.modules",
@@ -301,7 +299,7 @@ export const SPREADSHEET_PROPERTY_DETAILS: {
     ascendingOrderTitle: "None",
     descendingOrderKey: "-priority",
     descendingOrderTitle: "Urgent",
-    icon: "Signal",
+    icon: "PriorityPropertyIcon",
   },
   start_date: {
     i18n_title: "common.order_by.start_date",
@@ -309,7 +307,7 @@ export const SPREADSHEET_PROPERTY_DETAILS: {
     ascendingOrderTitle: "New",
     descendingOrderKey: "start_date",
     descendingOrderTitle: "Old",
-    icon: "CalendarClock",
+    icon: "StartDatePropertyIcon",
   },
   state: {
     i18n_title: "common.state",
@@ -317,7 +315,7 @@ export const SPREADSHEET_PROPERTY_DETAILS: {
     ascendingOrderTitle: "A",
     descendingOrderKey: "-state__name",
     descendingOrderTitle: "Z",
-    icon: "DoubleCircleIcon",
+    icon: "StatePropertyIcon",
   },
   updated_on: {
     i18n_title: "common.sort.updated_on",
@@ -352,3 +350,17 @@ export const SPREADSHEET_PROPERTY_DETAILS: {
     icon: "LayersIcon",
   },
 };
+
+// Map filter keys to their corresponding issue property keys
+export const FILTER_TO_ISSUE_MAP: Partial<Record<keyof IIssueFilterOptions, keyof TIssue>> = {
+  assignees: "assignee_ids",
+  created_by: "created_by",
+  labels: "label_ids",
+  priority: "priority",
+  cycle: "cycle_id",
+  module: "module_ids",
+  project: "project_id",
+  state: "state_id",
+  issue_type: "type_id",
+  state_group: "state__group",
+} as const;

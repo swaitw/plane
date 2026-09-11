@@ -1,40 +1,11 @@
-export const PROFILE_ACTION_LINKS: {
-  key: string;
-  i18n_label: string;
-  href: string;
-  highlight: (pathname: string) => boolean;
-}[] = [
-  {
-    key: "profile",
-    i18n_label: "profile.actions.profile",
-    href: `/profile`,
-    highlight: (pathname: string) => pathname === "/profile/",
-  },
-  {
-    key: "security",
-    i18n_label: "profile.actions.security",
-    href: `/profile/security`,
-    highlight: (pathname: string) => pathname === "/profile/security/",
-  },
-  {
-    key: "activity",
-    i18n_label: "profile.actions.activity",
-    href: `/profile/activity`,
-    highlight: (pathname: string) => pathname === "/profile/activity/",
-  },
-  {
-    key: "appearance",
-    i18n_label: "profile.actions.appearance",
-    href: `/profile/appearance`,
-    highlight: (pathname: string) => pathname.includes("/profile/appearance"),
-  },
-  {
-    key: "notifications",
-    i18n_label: "profile.actions.notifications",
-    href: `/profile/notifications`,
-    highlight: (pathname: string) => pathname === "/profile/notifications/",
-  },
-];
+/**
+ * Copyright (c) 2023-present Plane Software, Inc. and contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ * See the LICENSE file for details.
+ */
+
+// plane imports
+import { EStartOfTheWeek } from "@plane/types";
 
 export const PROFILE_VIEWER_TAB = [
   {
@@ -69,5 +40,53 @@ export const PROFILE_ADMINS_TAB = [
     route: "activity",
     i18n_label: "profile.tabs.activity",
     selected: "/activity/",
+  },
+];
+
+export const PREFERENCE_OPTIONS: {
+  id: string;
+  title: string;
+  description: string;
+}[] = [
+  {
+    id: "theme",
+    title: "theme",
+    description: "select_or_customize_your_interface_color_scheme",
+  },
+];
+
+/**
+ * @description The options for the start of the week
+ * @type {Array<{value: EStartOfTheWeek, label: string}>}
+ * @constant
+ */
+export const START_OF_THE_WEEK_OPTIONS = [
+  {
+    value: EStartOfTheWeek.SUNDAY,
+    label: "Sunday",
+  },
+  {
+    value: EStartOfTheWeek.MONDAY,
+    label: "Monday",
+  },
+  {
+    value: EStartOfTheWeek.TUESDAY,
+    label: "Tuesday",
+  },
+  {
+    value: EStartOfTheWeek.WEDNESDAY,
+    label: "Wednesday",
+  },
+  {
+    value: EStartOfTheWeek.THURSDAY,
+    label: "Thursday",
+  },
+  {
+    value: EStartOfTheWeek.FRIDAY,
+    label: "Friday",
+  },
+  {
+    value: EStartOfTheWeek.SATURDAY,
+    label: "Saturday",
   },
 ];
